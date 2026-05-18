@@ -2,10 +2,13 @@
 
 Este documento funciona como um checklist do que foi entregue no repositório.
 
-## Semana 1
-- [x] Repositório Git criado.
-- [x] Arquivo README inicial preenchido (integrantes, descrição, instruções).
-- [x] Estrutura de pastas definida (`db`, `infra`, `docs`).
-- [x] Arquivo `modelo_banco.md` criado respondendo às necessidades de negócio.
-- [x] Código para criar o contêiner `docker-compose.yml` e arquivo de instruções adicionado.
-- [x] Script `cria_banco.sql` funcional criado (tabelas, chaves, tipos, carga mock inicial, queries de teste).
+## Índice de Entregas
+- **Semana 1:**
+  - [x] Criação do repositório
+  - [x] Docker e inicialização do banco ([Instruções do Docker](../infra/docker/README.md))
+  - [x] Modelagem inicial e scripts SQL ([Modelo de Banco de Dados](../db/docs/modelo_banco.md))
+- **Semana 2:**
+  - [x] Carga de dados (massa para testes)
+  - [x] Consultas SQL (5 relatórios principais)
+  - [x] Camada Técnica de Acesso aos Dados (Filtros e App Python)
+  - [x] [Documentação Semana 2](semana2.md)
