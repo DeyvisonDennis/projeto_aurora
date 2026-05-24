@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar para Filtros -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>Aurora</h2>
+                <span>Comercial</span>
+            </div>
+            
+            <div class="filters-container">
+                <h3>Filtros Analíticos</h3>
+                
+                <div class="filter-group">
+                    <label for="data_inicial">Data Inicial</label>
+                    <input type="date" id="data_inicial">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="data_final">Data Final</label>
+                    <input type="date" id="data_final">
+                </div>
+
+                <div class="filter-group">
+                    <label for="id_filial">Filial</label>
+                    <select id="id_filial">
+                        <option value="">Todas as Filiais</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="id_categoria">Categoria</label>
+                    <select id="id_categoria">
+                        <option value="">Todas as Categorias</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="id_produto">Produto</label>
+                    <select id="id_produto">
+                        <option value="">Todos os Produtos</option>
+                    </select>
+                </div>
+
+                <button id="btn_limpar" class="btn-secondary">Limpar Filtros</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <h1>Painel de Desempenho</h1>
+                <p>Acompanhe os resultados comerciais em tempo real.</p>
+            </header>
+
+            <!-- Error Banner -->
+            <div id="error_banner" class="error-banner hidden">
+                <strong>Erro de Conexão:</strong> Não foi possível acessar o banco de dados. Tente novamente mais tarde.
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loading_indicator" class="loading hidden">
+                <div class="spinner"></div> Atualizando dados...
+            </div>
+
+            <!-- KPIs Cards -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <h4>Faturamento Bruto</h4>
+                    <h2 id="kpi_faturamento_bruto">R$ 0,00</h2>
+                </div>
+                <div class="kpi-card">
+                    <h4>Desconto Total</h4>
+                    <h2 id="kpi_desconto_total" class="text-danger">R$ 0,00</h2>
+                </div>
+                <div class="kpi-card highlight">
+                    <h4>Receita Líquida</h4>
+                    <h2 id="kpi_receita_liquida">R$ 0,00</h2>
+                </div>
+                <div class="kpi-card">
+                    <h4>Custo Total</h4>
+                    <h2 id="kpi_custo_total">R$ 0,00</h2>
+                </div>
+                <div class="kpi-card highlight-success">
+                    <h4>Margem Bruta</h4>
+                    <h2 id="kpi_margem_bruta">R$ 0,00</h2>
+                </div>
+                <div class="kpi-card">
+                    <h4>Margem Bruta (%)</h4>
+                    <h2 id="kpi_margem_bruta_percentual">0%</h2>
+                </div>
+                <div class="kpi-card">
+                    <h4>Quantidade Vendida</h4>
+                    <h2 id="kpi_quantidade_vendida">0</h2>
+                </div>
+                <div class="kpi-card">
+                    <h4>Ticket Médio</h4>
+                    <h2 id="kpi_ticket_medio">R$ 0,00</h2>
+                </div>
+            </section>
+
+            <!-- Tables Section -->
+            <section class="tables-grid">
+                
+                <!-- Table 1: Mensal -->
+                <div class="table-card">
+                    <h3>Faturamento Mensal</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mês</th>
+                                    <th>Faturamento Bruto</th>
+                                    <th>Receita Líquida</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody_mensal">
+                                <!-- Data populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Table 2: Filiais -->
+                <div class="table-card">
+                    <h3>Comparação por Filial</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Filial</th>
+                                    <th>Receita Líquida</th>
+                                    <th>Margem Bruta</th>
+                                    <th>Margem (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody_filial">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Table 3: Categorias -->
+                <div class="table-card">
+                    <h3>Análise por Categoria</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Categoria</th>
+                                    <th>Qtd Vendida</th>
+                                    <th>Faturamento Bruto</th>
+                                    <th>Receita Líquida</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody_categoria">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Table 4: Produtos -->
+                <div class="table-card">
+                    <h3>Produtos Mais Vendidos (Ranking)</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Categoria</th>
+                                    <th>Qtd Vendida</th>
+                                    <th>Receita Líquida</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody_produtos">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

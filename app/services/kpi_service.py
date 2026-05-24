@@ -18,6 +18,13 @@ class KPIService:
             filters['id_categoria'] = kwargs.get('id_categoria')
         return filters
 
+    def get_filtros_opcoes(self):
+        return self.queries.get_filtros_opcoes()
+
+    def kpis_globais(self, **kwargs):
+        filters = self.process_filters(kwargs)
+        return self.queries.get_kpis_globais(filters)
+
     def faturamento_por_mes(self, **kwargs):
         filters = self.process_filters(kwargs)
         return self.queries.get_faturamento_por_mes(filters)
@@ -33,7 +40,3 @@ class KPIService:
     def produtos_mais_vendidos(self, **kwargs):
         filters = self.process_filters(kwargs)
         return self.queries.get_produtos_mais_vendidos(filters)
-
-    def margem_por_mes_filial_categoria(self, **kwargs):
-        filters = self.process_filters(kwargs)
-        return self.queries.get_margem_por_mes_filial_categoria(filters)

@@ -12,3 +12,9 @@ Este documento funciona como um checklist do que foi entregue no repositório.
   - [x] Consultas SQL (5 relatórios principais)
   - [x] Camada Técnica de Acesso aos Dados (Filtros e App Python)
   - [x] [Documentação Semana 2](semana2.md)
+- **Semana 3:**
+  - [x] Aplicação web com Frontend e Backend (FastAPI).
+  - [x] Indicadores visuais em Cards (Sem gráficos).
+  - [x] Tabelas Analíticas e Filtros dinâmicos funcionais.
+  - [x] Resiliência a queda de banco de dados.
+  - [x] [Documentação de Execução](semana3.md) e [Testes](testes_semana3.md)
