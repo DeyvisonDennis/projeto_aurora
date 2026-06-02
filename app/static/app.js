@@ -1,5 +1,8 @@
 const API_BASE = '/api';
 
+// Armazenar dados para export
+const tableData = {};
+
 // Formatadores
 const formatCurrency = (value) => {
     if (value === null || value === undefined) return 'R$ 0,00';
@@ -9,6 +12,13 @@ const formatCurrency = (value) => {
 const formatNumber = (value) => {
     if (value === null || value === undefined) return '0';
     return new Intl.NumberFormat('pt-BR').format(value);
+};
+
+const formatPercent = (value) => {
+    if (value === null || value === undefined) return '-';
+    const num = parseFloat(value);
+    const cls = num >= 40 ? 'badge-high' : num >= 20 ? 'badge-mid' : 'badge-low';
+    return `<span class="badge ${cls}">${num.toFixed(2)}%</span>`;
 };
 
 // Referências DOM
@@ -21,6 +31,7 @@ const elements = {
     btn_limpar: document.getElementById('btn_limpar'),
     error_banner: document.getElementById('error_banner'),
     loading_indicator: document.getElementById('loading_indicator'),
+    last_update: document.getElementById('last_update'),
     
     // KPIs
     kpi_faturamento_bruto: document.getElementById('kpi_faturamento_bruto'),
@@ -36,7 +47,8 @@ const elements = {
     tbody_mensal: document.getElementById('tbody_mensal'),
     tbody_filial: document.getElementById('tbody_filial'),
     tbody_categoria: document.getElementById('tbody_categoria'),
-    tbody_produtos: document.getElementById('tbody_produtos')
+    tbody_produtos: document.getElementById('tbody_produtos'),
+    tbody_margem: document.getElementById('tbody_margem'),
 };
 
 // Obter Parâmetros de Filtro
@@ -89,33 +101,58 @@ const renderKPIs = (data) => {
     elements.kpi_ticket_medio.textContent = formatCurrency(data.ticket_medio);
 };
 
-// Renderizar Tabela Mensal
+// Renderizar Tabela Mensal (P1)
 const renderTabelaMensal = (data) => {
+    tableData['mensal'] = { headers: ['Mês','Fat. Bruto','Desconto Total','Receita Líquida','Qtd Vendida','Nº Vendas'], rows: data.map(r => [r.mes, r.faturamento_bruto, r.desconto_total, r.receita_liquida, r.quantidade_vendida, r.quantidade_de_vendas]) };
     elements.tbody_mensal.innerHTML = data.map(row => `
         <tr>
-            <td>${row.mes}</td>
+            <td><strong>${row.mes}</strong></td>
             <td>${formatCurrency(row.faturamento_bruto)}</td>
+            <td class="text-danger">${formatCurrency(row.desconto_total)}</td>
             <td>${formatCurrency(row.receita_liquida)}</td>
+            <td>${formatNumber(row.quantidade_vendida)}</td>
+            <td>${formatNumber(row.quantidade_de_vendas)}</td>
         </tr>
     `).join('');
 };
 
-// Renderizar Tabela Filial
+// Renderizar Tabela Filial (P2)
 const renderTabelaFilial = (data) => {
+    tableData['filial'] = { headers: ['Filial','Fat. Bruto','Desconto Total','Receita Líquida','Custo Total','Margem Bruta','Margem %'], rows: data.map(r => [r.filial, r.faturamento_bruto, r.desconto_total, r.receita_liquida, r.custo_total, r.margem_bruta, r.margem_bruta_percentual]) };
     elements.tbody_filial.innerHTML = data.map(row => `
         <tr>
-            <td>${row.filial}</td>
+            <td><strong>${row.filial}</strong></td>
+            <td>${formatCurrency(row.faturamento_bruto)}</td>
             <td>${formatCurrency(row.receita_liquida)}</td>
+            <td>${formatCurrency(row.custo_total)}</td>
             <td>${formatCurrency(row.margem_bruta)}</td>
-            <td>${row.margem_bruta_percentual != null ? row.margem_bruta_percentual + '%' : '-'}</td>
+            <td>${formatPercent(row.margem_bruta_percentual)}</td>
         </tr>
     `).join('');
 };
 
-// Renderizar Tabela Categoria
+// Renderizar Tabela Categoria (P3)
 const renderTabelaCategoria = (data) => {
+    tableData['categoria'] = { headers: ['Categoria','Qtd Vendida','Fat. Bruto','Receita Líquida','Margem Bruta','Margem %'], rows: data.map(r => [r.categoria, r.quantidade_vendida, r.faturamento_bruto, r.receita_liquida, r.margem_bruta, r.margem_bruta_percentual]) };
     elements.tbody_categoria.innerHTML = data.map(row => `
         <tr>
+            <td><strong>${row.categoria}</strong></td>
+            <td>${formatNumber(row.quantidade_vendida)}</td>
+            <td>${formatCurrency(row.faturamento_bruto)}</td>
+            <td>${formatCurrency(row.receita_liquida)}</td>
+            <td>${formatCurrency(row.margem_bruta)}</td>
+            <td>${formatPercent(row.margem_bruta_percentual)}</td>
+        </tr>
+    `).join('');
+};
+
+// Renderizar Tabela Produtos (P4)
+const renderTabelaProdutos = (data) => {
+    tableData['produtos'] = { headers: ['#','Produto','Categoria','Qtd Vendida','Fat. Bruto','Receita Líquida'], rows: data.map((r,i) => [i+1, r.produto, r.categoria, r.quantidade_vendida, r.faturamento_bruto, r.receita_liquida]) };
+    elements.tbody_produtos.innerHTML = data.map((row, index) => `
+        <tr>
+            <td><span class="rank-badge">${index + 1}</span></td>
+            <td><strong>${row.produto}</strong></td>
             <td>${row.categoria}</td>
             <td>${formatNumber(row.quantidade_vendida)}</td>
             <td>${formatCurrency(row.faturamento_bruto)}</td>
@@ -124,25 +161,64 @@ const renderTabelaCategoria = (data) => {
     `).join('');
 };
 
-// Renderizar Tabela Produtos
-const renderTabelaProdutos = (data) => {
-    elements.tbody_produtos.innerHTML = data.map(row => `
+// Renderizar Tabela Margem Detalhada (P5)
+const renderTabelaMargem = (data) => {
+    tableData['margem'] = { headers: ['Mês','Filial','Categoria','Receita Líquida','Custo Total','Margem Bruta','Margem %'], rows: data.map(r => [r.mes, r.filial, r.categoria, r.receita_liquida, r.custo_total, r.margem_bruta, r.margem_bruta_percentual]) };
+    elements.tbody_margem.innerHTML = data.map(row => `
         <tr>
-            <td>${row.produto}</td>
+            <td><strong>${row.mes}</strong></td>
+            <td>${row.filial}</td>
             <td>${row.categoria}</td>
-            <td>${formatNumber(row.quantidade_vendida)}</td>
             <td>${formatCurrency(row.receita_liquida)}</td>
+            <td>${formatCurrency(row.custo_total)}</td>
+            <td>${formatCurrency(row.margem_bruta)}</td>
+            <td>${formatPercent(row.margem_bruta_percentual)}</td>
         </tr>
     `).join('');
+};
+
+// =====================================================================
+// EXPORTAÇÃO CSV
+// =====================================================================
+const exportToCSV = (tableKey) => {
+    const data = tableData[tableKey];
+    if (!data || !data.rows || data.rows.length === 0) {
+        alert('Sem dados para exportar. Verifique os filtros aplicados.');
+        return;
+    }
+
+    const escapeCSV = (val) => {
+        if (val === null || val === undefined) return '';
+        const str = String(val);
+        return str.includes(',') || str.includes('"') || str.includes('\n') ? `"${str.replace(/"/g, '""')}"` : str;
+    };
+
+    const lines = [
+        data.headers.map(escapeCSV).join(','),
+        ...data.rows.map(row => row.map(escapeCSV).join(','))
+    ];
+
+    const csvContent = '\uFEFF' + lines.join('\r\n'); // BOM for Excel UTF-8
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const timestamp = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.download = `aurora_${tableKey}_${timestamp}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 };
 
 // Limpar Dados Visualmente em caso de erro
 const clearData = () => {
     renderKPIs({});
-    elements.tbody_mensal.innerHTML = '';
-    elements.tbody_filial.innerHTML = '';
-    elements.tbody_categoria.innerHTML = '';
-    elements.tbody_produtos.innerHTML = '';
+    elements.tbody_mensal.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">Sem dados</td></tr>';
+    elements.tbody_filial.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">Sem dados</td></tr>';
+    elements.tbody_categoria.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">Sem dados</td></tr>';
+    elements.tbody_produtos.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">Sem dados</td></tr>';
+    elements.tbody_margem.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">Sem dados</td></tr>';
 };
 
 const showError = () => {
@@ -164,12 +240,13 @@ const updateDashboard = async () => {
     hideError();
 
     try {
-        const [kpis, mensal, filial, categoria, produtos] = await Promise.all([
+        const [kpis, mensal, filial, categoria, produtos, margem] = await Promise.all([
             fetch(`${API_BASE}/kpis?${params}`).then(r => { if(!r.ok) throw new Error(); return r.json(); }),
             fetch(`${API_BASE}/tabelas/mensal?${params}`).then(r => r.json()),
             fetch(`${API_BASE}/tabelas/filial?${params}`).then(r => r.json()),
             fetch(`${API_BASE}/tabelas/categoria?${params}`).then(r => r.json()),
-            fetch(`${API_BASE}/tabelas/produtos?${params}`).then(r => r.json())
+            fetch(`${API_BASE}/tabelas/produtos?${params}`).then(r => r.json()),
+            fetch(`${API_BASE}/tabelas/margem?${params}`).then(r => r.json()),
         ]);
 
         renderKPIs(kpis);
@@ -177,6 +254,11 @@ const updateDashboard = async () => {
         renderTabelaFilial(filial);
         renderTabelaCategoria(categoria);
         renderTabelaProdutos(produtos);
+        renderTabelaMargem(margem);
+
+        // Atualizar timestamp
+        const now = new Date();
+        elements.last_update.textContent = `Atualizado às ${now.toLocaleTimeString('pt-BR')}`;
 
     } catch (error) {
         console.error("Erro de conexão com a API", error);

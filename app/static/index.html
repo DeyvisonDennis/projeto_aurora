@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurora Dashboard</title>
+    <meta name="description" content="Dashboard comercial da Rede Aurora com indicadores de faturamento, receita líquida, margem bruta e análises por filial, categoria e produto.">
+    <title>Aurora Dashboard — Rede Comercial Aurora</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -13,7 +14,7 @@
         <aside class="sidebar">
             <div class="logo">
                 <h2>Aurora</h2>
-                <span>Comercial</span>
+                <span>Rede Comercial</span>
             </div>
             
             <div class="filters-container">
@@ -52,18 +53,30 @@
 
                 <button id="btn_limpar" class="btn-secondary">Limpar Filtros</button>
             </div>
+
+            <div class="sidebar-footer">
+                <p>Rede Comercial Aurora</p>
+                <span>Sistema de Análise Comercial</span>
+            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
             <header>
-                <h1>Painel de Desempenho</h1>
-                <p>Acompanhe os resultados comerciais em tempo real.</p>
+                <div class="header-top">
+                    <div>
+                        <h1>Painel de Desempenho Comercial</h1>
+                        <p>Indicadores e análises da Rede Comercial Aurora — Dados de Janeiro a Junho de 2024</p>
+                    </div>
+                    <div class="header-badge">
+                        <span id="last_update">Carregando...</span>
+                    </div>
+                </div>
             </header>
 
             <!-- Error Banner -->
             <div id="error_banner" class="error-banner hidden">
-                <strong>Erro de Conexão:</strong> Não foi possível acessar o banco de dados. Tente novamente mais tarde.
+                <strong>⚠ Erro de Conexão:</strong> Não foi possível acessar o banco de dados. Verifique se o container Docker está ativo e tente novamente.
             </div>
 
             <!-- Loading Indicator -->
@@ -72,120 +85,203 @@
             </div>
 
             <!-- KPIs Cards -->
-            <section class="kpi-grid">
-                <div class="kpi-card">
-                    <h4>Faturamento Bruto</h4>
-                    <h2 id="kpi_faturamento_bruto">R$ 0,00</h2>
-                </div>
-                <div class="kpi-card">
-                    <h4>Desconto Total</h4>
-                    <h2 id="kpi_desconto_total" class="text-danger">R$ 0,00</h2>
-                </div>
-                <div class="kpi-card highlight">
-                    <h4>Receita Líquida</h4>
-                    <h2 id="kpi_receita_liquida">R$ 0,00</h2>
-                </div>
-                <div class="kpi-card">
-                    <h4>Custo Total</h4>
-                    <h2 id="kpi_custo_total">R$ 0,00</h2>
-                </div>
-                <div class="kpi-card highlight-success">
-                    <h4>Margem Bruta</h4>
-                    <h2 id="kpi_margem_bruta">R$ 0,00</h2>
-                </div>
-                <div class="kpi-card">
-                    <h4>Margem Bruta (%)</h4>
-                    <h2 id="kpi_margem_bruta_percentual">0%</h2>
-                </div>
-                <div class="kpi-card">
-                    <h4>Quantidade Vendida</h4>
-                    <h2 id="kpi_quantidade_vendida">0</h2>
-                </div>
-                <div class="kpi-card">
-                    <h4>Ticket Médio</h4>
-                    <h2 id="kpi_ticket_medio">R$ 0,00</h2>
+            <section class="kpi-section">
+                <h2 class="section-title">Indicadores Globais</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon">💰</div>
+                        <h4>Faturamento Bruto</h4>
+                        <h2 id="kpi_faturamento_bruto">R$ 0,00</h2>
+                        <p class="kpi-desc">Soma de quantidade × preço unitário</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">🏷️</div>
+                        <h4>Desconto Total</h4>
+                        <h2 id="kpi_desconto_total" class="text-danger">R$ 0,00</h2>
+                        <p class="kpi-desc">Total de descontos concedidos</p>
+                    </div>
+                    <div class="kpi-card highlight">
+                        <div class="kpi-icon">📈</div>
+                        <h4>Receita Líquida</h4>
+                        <h2 id="kpi_receita_liquida">R$ 0,00</h2>
+                        <p class="kpi-desc">Faturamento bruto − descontos</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">🏭</div>
+                        <h4>Custo Total</h4>
+                        <h2 id="kpi_custo_total">R$ 0,00</h2>
+                        <p class="kpi-desc">Soma de quantidade × custo unitário</p>
+                    </div>
+                    <div class="kpi-card highlight-success">
+                        <div class="kpi-icon">💎</div>
+                        <h4>Margem Bruta</h4>
+                        <h2 id="kpi_margem_bruta">R$ 0,00</h2>
+                        <p class="kpi-desc">Receita líquida − custo total</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">📊</div>
+                        <h4>Margem Bruta (%)</h4>
+                        <h2 id="kpi_margem_bruta_percentual">0%</h2>
+                        <p class="kpi-desc">(Margem bruta / receita líquida) × 100</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">📦</div>
+                        <h4>Quantidade Vendida</h4>
+                        <h2 id="kpi_quantidade_vendida">0</h2>
+                        <p class="kpi-desc">Total de unidades comercializadas</p>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">🎫</div>
+                        <h4>Ticket Médio</h4>
+                        <h2 id="kpi_ticket_medio">R$ 0,00</h2>
+                        <p class="kpi-desc">Receita líquida / nº de vendas</p>
+                    </div>
                 </div>
             </section>
 
             <!-- Tables Section -->
-            <section class="tables-grid">
-                
-                <!-- Table 1: Mensal -->
-                <div class="table-card">
-                    <h3>Faturamento Mensal</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Mês</th>
-                                    <th>Faturamento Bruto</th>
-                                    <th>Receita Líquida</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody_mensal">
-                                <!-- Data populated via JS -->
-                            </tbody>
-                        </table>
+            <section class="tables-section">
+                <h2 class="section-title">Visualizações Analíticas</h2>
+                <div class="tables-grid">
+                    
+                    <!-- Tabela 1: Faturamento Mensal (P1) -->
+                    <div class="table-card" id="vis-mensal">
+                        <div class="table-header">
+                            <div>
+                                <h3>📅 Faturamento por Mês</h3>
+                                <p class="table-desc">Responde à Pergunta de Negócio 1</p>
+                            </div>
+                            <button class="btn-export" onclick="exportToCSV('mensal')">⬇ CSV</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="table_mensal">
+                                <thead>
+                                    <tr>
+                                        <th>Mês</th>
+                                        <th>Fat. Bruto</th>
+                                        <th>Desconto</th>
+                                        <th>Receita Líquida</th>
+                                        <th>Qtd Vendida</th>
+                                        <th>Nº Vendas</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_mensal">
+                                    <!-- Data populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Table 2: Filiais -->
-                <div class="table-card">
-                    <h3>Comparação por Filial</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Filial</th>
-                                    <th>Receita Líquida</th>
-                                    <th>Margem Bruta</th>
-                                    <th>Margem (%)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody_filial">
-                            </tbody>
-                        </table>
+                    <!-- Tabela 2: Receita por Filial (P2) -->
+                    <div class="table-card" id="vis-filial">
+                        <div class="table-header">
+                            <div>
+                                <h3>🏢 Receita Líquida por Filial</h3>
+                                <p class="table-desc">Responde à Pergunta de Negócio 2</p>
+                            </div>
+                            <button class="btn-export" onclick="exportToCSV('filial')">⬇ CSV</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="table_filial">
+                                <thead>
+                                    <tr>
+                                        <th>Filial</th>
+                                        <th>Fat. Bruto</th>
+                                        <th>Receita Líquida</th>
+                                        <th>Custo Total</th>
+                                        <th>Margem Bruta</th>
+                                        <th>Margem %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_filial">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Table 3: Categorias -->
-                <div class="table-card">
-                    <h3>Análise por Categoria</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Categoria</th>
-                                    <th>Qtd Vendida</th>
-                                    <th>Faturamento Bruto</th>
-                                    <th>Receita Líquida</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody_categoria">
-                            </tbody>
-                        </table>
+                    <!-- Tabela 3: Receita por Categoria (P3) -->
+                    <div class="table-card" id="vis-categoria">
+                        <div class="table-header">
+                            <div>
+                                <h3>🏷️ Receita Líquida por Categoria</h3>
+                                <p class="table-desc">Responde à Pergunta de Negócio 3</p>
+                            </div>
+                            <button class="btn-export" onclick="exportToCSV('categoria')">⬇ CSV</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="table_categoria">
+                                <thead>
+                                    <tr>
+                                        <th>Categoria</th>
+                                        <th>Qtd Vendida</th>
+                                        <th>Fat. Bruto</th>
+                                        <th>Receita Líquida</th>
+                                        <th>Margem Bruta</th>
+                                        <th>Margem %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_categoria">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Table 4: Produtos -->
-                <div class="table-card">
-                    <h3>Produtos Mais Vendidos (Ranking)</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>Categoria</th>
-                                    <th>Qtd Vendida</th>
-                                    <th>Receita Líquida</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody_produtos">
-                            </tbody>
-                        </table>
+                    <!-- Tabela 4: Ranking Produtos (P4) -->
+                    <div class="table-card" id="vis-produtos">
+                        <div class="table-header">
+                            <div>
+                                <h3>🏆 Ranking de Produtos Mais Vendidos</h3>
+                                <p class="table-desc">Responde à Pergunta de Negócio 4</p>
+                            </div>
+                            <button class="btn-export" onclick="exportToCSV('produtos')">⬇ CSV</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="table_produtos">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Produto</th>
+                                        <th>Categoria</th>
+                                        <th>Qtd Vendida</th>
+                                        <th>Fat. Bruto</th>
+                                        <th>Receita Líquida</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_produtos">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
+                    <!-- Tabela 5: Margem Detalhada por Mês/Filial/Categoria (P5) -->
+                    <div class="table-card table-card-full" id="vis-margem">
+                        <div class="table-header">
+                            <div>
+                                <h3>📐 Margem Bruta por Mês, Filial e Categoria</h3>
+                                <p class="table-desc">Responde à Pergunta de Negócio 5 — Visão cruzada detalhada</p>
+                            </div>
+                            <button class="btn-export" onclick="exportToCSV('margem')">⬇ CSV</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="table_margem">
+                                <thead>
+                                    <tr>
+                                        <th>Mês</th>
+                                        <th>Filial</th>
+                                        <th>Categoria</th>
+                                        <th>Receita Líquida</th>
+                                        <th>Custo Total</th>
+                                        <th>Margem Bruta</th>
+                                        <th>Margem %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_margem">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
             </section>
         </main>
     </div>

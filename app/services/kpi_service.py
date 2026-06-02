@@ -40,3 +40,7 @@ class KPIService:
     def produtos_mais_vendidos(self, **kwargs):
         filters = self.process_filters(kwargs)
         return self.queries.get_produtos_mais_vendidos(filters)
+
+    def margem_detalhada(self, **kwargs):
+        filters = self.process_filters(kwargs)
+        return self.queries.get_margem_detalhada(filters)

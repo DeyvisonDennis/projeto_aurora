@@ -180,3 +180,27 @@ class Queries:
         """
         res = self._execute_query(query, filters)
         return res if res else []
+
+    def get_margem_detalhada(self, filters):
+        query = """
+            SELECT 
+                TO_CHAR(v.data_venda, 'YYYY-MM') AS mes,
+                f.nome AS filial,
+                c.nome AS categoria,
+                SUM((iv.quantidade * iv.preco_unitario) - iv.desconto_item) AS receita_liquida,
+                SUM(iv.quantidade * p.custo_unitario) AS custo_total,
+                SUM((iv.quantidade * iv.preco_unitario) - iv.desconto_item) - SUM(iv.quantidade * p.custo_unitario) AS margem_bruta,
+                ROUND(
+                    ( (SUM((iv.quantidade * iv.preco_unitario) - iv.desconto_item) - SUM(iv.quantidade * p.custo_unitario)) / 
+                    NULLIF(SUM((iv.quantidade * iv.preco_unitario) - iv.desconto_item), 0) ) * 100, 2
+                ) AS margem_bruta_percentual
+            FROM venda v
+            JOIN filial f ON v.id_filial = f.id_filial
+            JOIN item_venda iv ON v.id_venda = iv.id_venda
+            JOIN produto p ON iv.id_produto = p.id_produto
+            JOIN categoria c ON p.id_categoria = c.id_categoria
+            GROUP BY TO_CHAR(v.data_venda, 'YYYY-MM'), f.nome, c.nome
+            ORDER BY mes, filial, categoria;
+        """
+        res = self._execute_query(query, filters)
+        return res if res else []

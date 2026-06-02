@@ -121,3 +121,20 @@ def get_tabela_produtos(
         id_categoria=id_categoria,
         id_produto=id_produto
     )
+
+@app.get("/api/tabelas/margem")
+def get_tabela_margem(
+    data_inicial: Optional[str] = None,
+    data_final: Optional[str] = None,
+    id_filial: Optional[int] = None,
+    id_categoria: Optional[int] = None,
+    id_produto: Optional[int] = None
+):
+    return handle_request(
+        kpi_service.margem_detalhada,
+        data_inicial=data_inicial,
+        data_final=data_final,
+        id_filial=id_filial,
+        id_categoria=id_categoria,
+        id_produto=id_produto
+    )
