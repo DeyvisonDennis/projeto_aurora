@@ -114,14 +114,4 @@
 **Problema:** A query de KPIs globais não tem `GROUP BY`, então a lógica de inserção do `WHERE` antes do `GROUP BY` não funcionava.  
 **Solução:** Adicionamos uma condição `else` no método que simplesmente concatena o `WHERE` ao final da query quando não há `GROUP BY` nem `ORDER BY`.
 
----
 
-## Contribuição na Apresentação
-
-| Integrante | Parte da Apresentação |
-|---|---|
-| Ryan Charles | Explica a arquitetura técnica e o backend (FastAPI, endpoints, filtros) |
-| Deyvison Dennis | Apresenta o banco de dados, modelo ER e as queries das 5 perguntas |
-| Vitor Epifânio | Demonstra o dashboard ao vivo: filtros, KPIs, tabelas e export CSV |
-| Milleny Evan | Apresenta os testes realizados e valida os KPIs calculados |
-| Yasmin Isabelli | Demonstra o Docker, container em execução e infraestrutura |
