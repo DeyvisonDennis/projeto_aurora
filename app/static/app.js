@@ -21,7 +21,7 @@ const els = {
 // Formatters
 const fmtMoney = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
 const fmtNum = (val) => new Intl.NumberFormat('pt-BR').format(val || 0);
-const fmtPerc = (val) => (val || 0).toFixed(2).replace('.', ',') + '%';
+const fmtPerc = (val) => Number(val || 0).toFixed(2).replace('.', ',') + '%';
 
 // Init
 async function init() {
