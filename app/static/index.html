@@ -176,7 +176,6 @@
                                 <h3>📅 Faturamento × Receita por Mês</h3>
                                 <p>Evolução mensal com comparação de descontos — Pergunta de Negócio 1</p>
                             </div>
-                            <button class="btn-export" onclick="exportToCSV('mensal')">⬇ CSV</button>
                         </div>
                         <div class="chart-wrapper">
                             <canvas id="chart_mensal"></canvas>
@@ -190,7 +189,6 @@
                                 <h3>🏢 Receita Líquida por Filial</h3>
                                 <p>Ranking e margem de cada unidade — Pergunta 2</p>
                             </div>
-                            <button class="btn-export" onclick="exportToCSV('filial')">⬇ CSV</button>
                         </div>
                         <div class="chart-wrapper">
                             <canvas id="chart_filial"></canvas>
@@ -204,7 +202,6 @@
                                 <h3>🏷️ Distribuição por Categoria</h3>
                                 <p>Participação de cada categoria na receita — Pergunta 3</p>
                             </div>
-                            <button class="btn-export" onclick="exportToCSV('categoria')">⬇ CSV</button>
                         </div>
                         <div class="chart-wrapper chart-wrapper-doughnut">
                             <canvas id="chart_categoria"></canvas>
@@ -218,7 +215,6 @@
                                 <h3>🏆 Top Produtos Mais Vendidos</h3>
                                 <p>Ranking por quantidade vendida — Pergunta 4</p>
                             </div>
-                            <button class="btn-export" onclick="exportToCSV('produtos')">⬇ CSV</button>
                         </div>
                         <div class="chart-wrapper">
                             <canvas id="chart_produtos"></canvas>
@@ -232,7 +228,6 @@
                                 <h3>📐 Margem Bruta (%) por Mês</h3>
                                 <p>Evolução da rentabilidade mensal — Pergunta de Negócio 5</p>
                             </div>
-                            <button class="btn-export" onclick="exportToCSV('margem')">⬇ CSV</button>
                         </div>
                         <div class="chart-wrapper">
                             <canvas id="chart_margem"></canvas>
@@ -254,6 +249,7 @@
                                 <h3>📅 Faturamento por Mês</h3>
                                 <p class="table-desc">Pergunta de Negócio 1</p>
                             </div>
+                            <button class="btn-export" onclick="exportToCSV('mensal')">⬇ CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table id="table_mensal">
@@ -273,6 +269,7 @@
                                 <h3>🏢 Receita por Filial</h3>
                                 <p class="table-desc">Pergunta de Negócio 2</p>
                             </div>
+                            <button class="btn-export" onclick="exportToCSV('filial')">⬇ CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table id="table_filial">
@@ -292,6 +289,7 @@
                                 <h3>🏷️ Receita por Categoria</h3>
                                 <p class="table-desc">Pergunta de Negócio 3</p>
                             </div>
+                            <button class="btn-export" onclick="exportToCSV('categoria')">⬇ CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table id="table_categoria">
@@ -311,6 +309,7 @@
                                 <h3>🏆 Ranking de Produtos</h3>
                                 <p class="table-desc">Pergunta de Negócio 4</p>
                             </div>
+                            <button class="btn-export" onclick="exportToCSV('produtos')">⬇ CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table id="table_produtos">
@@ -330,6 +329,7 @@
                                 <h3>📐 Margem Bruta por Mês × Filial × Categoria</h3>
                                 <p class="table-desc">Pergunta de Negócio 5 — Visão cruzada detalhada</p>
                             </div>
+                            <button class="btn-export" onclick="exportToCSV('margem')">⬇ CSV</button>
                         </div>
                         <div class="table-responsive">
                             <table id="table_margem">
