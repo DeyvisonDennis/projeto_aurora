@@ -44,3 +44,7 @@ class KPIService:
     def margem_detalhada(self, **kwargs):
         filters = self.process_filters(kwargs)
         return self.queries.get_margem_detalhada(filters)
+
+    # Alias para compatibilidade com main.py (CLI legado)
+    def margem_por_mes_filial_categoria(self, **kwargs):
+        return self.margem_detalhada(**kwargs)

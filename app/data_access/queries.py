@@ -1,5 +1,4 @@
 from config.database import DatabaseConfig
-import psycopg2
 
 class Queries:
     def __init__(self):
@@ -15,56 +14,66 @@ class Queries:
 
         # Aplicação dos filtros dinâmicos
         if filters.get('data_inicial'):
-            where_clauses.append("v.data_venda >= %s")
+            where_clauses.append("v.data_venda >= :data_inicial")
             params.append(filters['data_inicial'])
         if filters.get('data_final'):
-            where_clauses.append("v.data_venda <= %s")
+            where_clauses.append("v.data_venda <= :data_final")
             params.append(filters['data_final'])
         if filters.get('id_filial'):
-            where_clauses.append("v.id_filial = %s")
+            where_clauses.append("v.id_filial = :id_filial")
             params.append(filters['id_filial'])
         if filters.get('id_produto'):
-            where_clauses.append("iv.id_produto = %s")
+            where_clauses.append("iv.id_produto = :id_produto")
             params.append(filters['id_produto'])
         if filters.get('id_categoria'):
-            where_clauses.append("p.id_categoria = %s")
+            where_clauses.append("p.id_categoria = :id_categoria")
             params.append(filters['id_categoria'])
+
+        # pg8000 usa %s como placeholder
+        for i, clause in enumerate(where_clauses):
+            where_clauses[i] = clause.split(" :")[0] + " %s"
 
         if where_clauses:
             where_string = " WHERE " + " AND ".join(where_clauses)
             if "GROUP BY" in base_query:
-                base_query = base_query.replace("GROUP BY", f"{where_string} GROUP BY")
+                base_query = base_query.replace("GROUP BY", f"{where_string} GROUP BY", 1)
             elif "ORDER BY" in base_query:
-                base_query = base_query.replace("ORDER BY", f"{where_string} ORDER BY")
+                base_query = base_query.replace("ORDER BY", f"{where_string} ORDER BY", 1)
             else:
                 base_query += where_string
 
         try:
-            with conn.cursor() as cursor:
-                cursor.execute(base_query, tuple(params))
-                columns = [desc[0] for desc in cursor.description]
-                if is_single_row:
-                    row = cursor.fetchone()
-                    return dict(zip(columns, row)) if row else None
-                return [dict(zip(columns, row)) for row in cursor.fetchall()]
+            cursor = conn.cursor()
+            cursor.execute(base_query, tuple(params))
+            columns = [desc[0] for desc in cursor.description]
+            if is_single_row:
+                row = cursor.fetchone()
+                return dict(zip(columns, row)) if row else None
+            return [dict(zip(columns, row)) for row in cursor.fetchall()]
         except Exception as e:
             raise Exception(f"Erro de banco de dados: {e}")
         finally:
-            conn.close()
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     def _execute_simple_query(self, query):
         conn = self.db.get_connection()
         if not conn:
             raise Exception("Erro de conexão com o banco de dados")
         try:
-            with conn.cursor() as cursor:
-                cursor.execute(query)
-                columns = [desc[0] for desc in cursor.description]
-                return [dict(zip(columns, row)) for row in cursor.fetchall()]
+            cursor = conn.cursor()
+            cursor.execute(query)
+            columns = [desc[0] for desc in cursor.description]
+            return [dict(zip(columns, row)) for row in cursor.fetchall()]
         except Exception as e:
             raise Exception(f"Erro de banco de dados: {e}")
         finally:
-            conn.close()
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     def get_filtros_opcoes(self):
         filiais = self._execute_simple_query("SELECT id_filial as id, nome FROM filial ORDER BY nome")
@@ -94,9 +103,6 @@ class Queries:
             JOIN item_venda iv ON v.id_venda = iv.id_venda
             JOIN produto p ON iv.id_produto = p.id_produto
         """
-        # We need a dummy GROUP BY or just let it append WHERE since there is no GROUP BY
-        # Actually our string replace logic looks for GROUP BY or ORDER BY. Let's add a dummy ORDER BY or change logic
-        # Changed the logic above to append if no GROUP BY/ORDER BY.
         row = self._execute_query(query, filters, is_single_row=True)
         return row if row else {}
 
@@ -113,7 +119,7 @@ class Queries:
             JOIN item_venda iv ON v.id_venda = iv.id_venda
             JOIN produto p ON iv.id_produto = p.id_produto
             GROUP BY TO_CHAR(v.data_venda, 'YYYY-MM')
-            ORDER BY mes;
+            ORDER BY mes
         """
         res = self._execute_query(query, filters)
         return res if res else []
@@ -136,7 +142,7 @@ class Queries:
             JOIN item_venda iv ON v.id_venda = iv.id_venda
             JOIN produto p ON iv.id_produto = p.id_produto
             GROUP BY f.nome
-            ORDER BY receita_liquida DESC;
+            ORDER BY receita_liquida DESC
         """
         res = self._execute_query(query, filters)
         return res if res else []
@@ -158,7 +164,7 @@ class Queries:
             JOIN item_venda iv ON p.id_produto = iv.id_produto
             JOIN venda v ON iv.id_venda = v.id_venda
             GROUP BY c.nome
-            ORDER BY receita_liquida DESC;
+            ORDER BY receita_liquida DESC
         """
         res = self._execute_query(query, filters)
         return res if res else []
@@ -176,7 +182,7 @@ class Queries:
             JOIN item_venda iv ON p.id_produto = iv.id_produto
             JOIN venda v ON iv.id_venda = v.id_venda
             GROUP BY p.nome, c.nome
-            ORDER BY quantidade_vendida DESC;
+            ORDER BY quantidade_vendida DESC
         """
         res = self._execute_query(query, filters)
         return res if res else []
@@ -200,7 +206,7 @@ class Queries:
             JOIN produto p ON iv.id_produto = p.id_produto
             JOIN categoria c ON p.id_categoria = c.id_categoria
             GROUP BY TO_CHAR(v.data_venda, 'YYYY-MM'), f.nome, c.nome
-            ORDER BY mes, filial, categoria;
+            ORDER BY mes, filial, categoria
         """
         res = self._execute_query(query, filters)
         return res if res else []
